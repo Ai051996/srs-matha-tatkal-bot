@@ -1,0 +1,4 @@
+# Add third-party Python packages here, one per line.
+
+requests>=2.31.0
+beautifulsoup4>=4.12.0
