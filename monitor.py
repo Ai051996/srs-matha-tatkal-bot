@@ -10,7 +10,7 @@ CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 # Polling configuration
 INTERVAL_SECONDS = 10        # Poll every 10 seconds
-TOTAL_DURATION_MINUTES = 12  # Run for 12 minutes (e.g., 5:55 AM to 6:07 AM IST)
+TOTAL_DURATION_MINUTES =  12 # Run for 12 minutes (e.g., 5:55 AM to 6:07 AM IST)
 MAX_ITERATIONS = int((TOTAL_DURATION_MINUTES * 60) / INTERVAL_SECONDS)
 
 HEADERS = {
@@ -64,7 +64,10 @@ def check_portal(session: requests.Session) -> bool:
             )
             send_alert(alert_body)
             return True
-
+        else:                            ##delete
+            send_alert(alert_body)       ##delete
+            return True                  ##delete
+        
         print(f"[{time.strftime('%X')}] No slots yet (Status: Sold out / Not released).")
         return False
 
