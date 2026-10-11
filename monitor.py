@@ -64,15 +64,7 @@ def check_portal(session: requests.Session) -> bool:
             )
             send_alert(alert_body)
             return True
-        else:  
-            alert_body = (
-                            "🚨 <b>SRS Matha Tatkal Room Open!</b>\n\n"
-                            "A booking slot was just detected!\n\n"
-                            f'<a href="{URL}">Open Booking Portal Now</a>'
-                        )
-                                         ##delete
-            send_alert(alert_body)       ##delete
-            return True                  ##delete
+        
         
         print(f"[{time.strftime('%X')}] No slots yet (Status: Sold out / Not released).")
         return False
