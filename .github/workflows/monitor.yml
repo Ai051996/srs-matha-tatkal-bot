@@ -3,7 +3,8 @@ name: SRS Matha Tatkal Release Monitor
 on:
   schedule:
     # 00:25 UTC = 05:55 IST (runs every day 5 minutes before Tatkal release)
-    - cron: '25 0 * * *'
+    - cron: '30 7 * * *'   # 1:00 PM IST
+    - cron: '30 10 * * *'  # 4:00 PM IST
   workflow_dispatch: # Allows manual trigger from the Actions tab anytime
 
 jobs:
