@@ -44,38 +44,38 @@ def send_alert(message: str) -> bool:
 
 def check_portal(session: requests.Session) -> bool:
     try:
-        response = session.get(URL, headers=HEADERS, timeout=10)
-        if response.status_code != 200:
-            print(f"[{time.strftime('%X')}] HTTP {response.status_code}")
-            return False
+        # Step A: Hit the base portal first to acquire session cookie
+        session.get("https://srsmatha.org/", headers=HEADERS, timeout=5)
 
+        # Step B: Request the tatkal page
+        response = session.get(URL, headers=HEADERS, timeout=10)
         soup = BeautifulSoup(response.text, "html.parser")
-        # Normalize all whitespace into clean single spaces
         clean_text = " ".join(soup.get_text().split())
 
-        # Check for positive availability markers
-        has_options = "tatkal options available" in clean_text.lower()
-        has_book_now = "book now" in clean_text.lower()
+        # Check for numbers before "Tatkal options available"
+        slot_matches = re.findall(r"(\d+)\s*Tatkal options available", clean_text, re.IGNORECASE)
 
-        # Find how many slots are open (e.g., '10 Tatkal options available')
-        slot_counts = re.findall(r"(\d+)\s*Tatkal options available", clean_text, re.IGNORECASE)
-
-        if has_options or has_book_now:
-            details = f"{slot_counts[0]} slots found" if slot_counts else "Tatkal slots detected"
-            print(f"[{time.strftime('%X')}] MATCH: {details}")
-
+        if slot_matches:
+            total_slots = slot_matches[0]
+            print(f"[{time.strftime('%X')}] FOUND: {total_slots} slots available!")
+            
             alert_body = (
-                "🚨 <b>SRS Matha Tatkal Room Open!</b>\n\n"
-                f"<b>Status:</b> {details}\n\n"
-                f'👉 <a href="{URL}">Book Room on Portal Now</a>'
+                f"🚨 <b>SRS Matha Tatkal Room Open!</b>\n\n"
+                f"<b>Available:</b> {total_slots} options\n\n"
+                f'👉 <a href="{URL}">Tap to Open Portal Immediately</a>'
             )
             return send_alert(alert_body)
 
-        print(f"[{time.strftime('%X')}] Fully sold out / no slots open yet.")
+        # Debug print: Show exactly what text the runner is reading
+        print(f"[{time.strftime('%X')}] No slots found. Text snippet seen by runner:")
+        # Print lines mentioning 'sold out' or 'available'
+        for line in clean_text.split(". "):
+            if any(k in line.lower() for k in ["sold out", "available", "tatkal", "released"]):
+                print(f"   -> {line.strip()}")
         return False
 
-    except requests.RequestException as err:
-        print(f"[{time.strftime('%X')}] Network error: {err}")
+    except Exception as err:
+        print(f"Error: {err}")
         return False
 
 def main():
